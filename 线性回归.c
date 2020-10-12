@@ -119,23 +119,24 @@ float cost_function(Point *sample,int l, float k, float a){
 }
 
 int gradient_descent(Point *sample,int l, float *k, float *a,float alpha,Cost *max3,int i){ 
-    if(i>5000){    //递归1w次，函数停止
+    if(i>90000){    //递归1w次，函数停止
         return 0;
     }
     i++;
     float k2, a2;//临时储存迭代后的k和a
-    printf("%2f", *a);
     a2 = *a-alpha*get_gradient_a(sample, l, *k, *a);
     k2 = *k-alpha*get_gradient_k(sample, l, *k, *a);
     *a = a2;
     *k = k2;
     //利用max3_increase更新
     max3_increase(sample,l,k,a,max3);
-    if (max3_if_end(max3)){    //存储最近的3次的数据，计算它们的cost，如果最老的数据（cost3)最小，函数停止
+    /* if (max3_if_end(max3)){    //存储最近的3次的数据，计算它们的cost，如果最老的数据（cost3)最小，函数停止
         return 1;
-    }
+    } */
+    printf("%d:  %2f | %2f | %2f \n",i,*k,*a,max3->cost);
+
     gradient_descent(sample, l, k, a, alpha, max3, i);
-    return 1;
+    return 0;
 }
 
 void max3_increase(Point *sample, int l,float *k, float *a,Cost *max3){
@@ -169,7 +170,7 @@ void max3_initialization(Cost *max3,int a){
 }
 
 int max3_if_end(Cost *max3){
-    if (max3->cost<(max3+1)->cost&&(max3+1)->cost<(max3+2)->cost)
+    if (max3->cost>(max3+2)->cost&&(max3+1)->cost>(max3+2)->cost&&(max3+1)->cost!=(max3+2)->cost)
     {
         return 1;
     }else{
@@ -200,7 +201,7 @@ int main(){
     int l=10;
     float a = 0;
     float k = 1;
-    float alpha=0.1;
+    float alpha=0.001;
     if( gradient_descent(s, l, &k, &a, alpha, max3, i)){
         printf("y=%3fx+%3f cost=%3f",max3->k, max3->a, max3->cost);
     }else
@@ -208,6 +209,6 @@ int main(){
         printf("you stupid code");
     }
 
-    printf("I dont knwo waht happen!");
+    //printf("/nI dont knwo waht happen!");
     return 0;
 }
